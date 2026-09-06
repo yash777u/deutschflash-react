@@ -1,0 +1,10 @@
+.visual-cue {
+  min-height: 150px;
+}
+
+.visual-cue img {
+  width: min(100%, 360px);
+  height: 150px;
+  object-fit: cover;
+  border: 1px solid var(--line);
+}
