@@ -21,3 +21,6 @@ npm run dev
 The app reads Excel workbooks directly in the browser using `xlsx`. Speech falls back to the browser's German speech-synthesis voice when an exact cached MP3 is not present.
 # deutschflash-react
 # deutschflash-react
+
+After adding more vocab 
+run ''' npm run audio:generate '''
