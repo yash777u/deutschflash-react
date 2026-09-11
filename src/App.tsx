@@ -19,10 +19,27 @@ const imageCache = new Map<string, Promise<string | null>>()
 const voiceCache = new Map<string, Promise<string | null>>()
 const sentenceRows = new Map<string, VocabRow>()
 const dictionaryCache = new Map<string, Promise<DictionaryEntry[]>>()
+const builtInDictionary = new Map<string, DictionaryEntry[]>()
 
 function imageFor(query: string) { if (!imageCache.has(query)) imageCache.set(query, fetch(`https://commons.wikimedia.org/w/api.php?action=query&generator=search&gsrsearch=${encodeURIComponent(query)}&gsrnamespace=6&gsrlimit=1&prop=imageinfo&iiprop=url&iiurlwidth=640&format=json&origin=*`).then((response) => response.json()).then((data) => { const page = Object.values(data.query?.pages ?? {})[0] as { imageinfo?: { thumburl?: string; url?: string }[] } | undefined; return page?.imageinfo?.[0]?.thumburl ?? page?.imageinfo?.[0]?.url ?? null }).catch(() => null)); return imageCache.get(query)! }
 function preloadImages(rows: VocabRow[]) { rows.forEach((row) => imageFor(clean(row.keyword) || clean(row.german_word))) }
 function rememberSentences(workbooks: Workbook[]) { workbooks.flatMap((workbook) => Object.values(workbook.sheets).flat()).forEach((row) => { const sentence = clean(row.example_sentence); if (sentence) sentenceRows.set(sentence, row) }) }
+function seedBuiltInDictionary(workbooks: Workbook[]) {
+  builtInDictionary.clear()
+  workbooks.flatMap((workbook) => Object.values(workbook.sheets).flat()).forEach((row) => {
+    const word = clean(row.german_word).trim()
+    const meaning = clean(row.meaning).trim()
+    const normalized = word.toLowerCase().replace(/[^\p{L}\p{N}ßäöüÄÖÜ-]/gu, '')
+    if (!normalized || !meaning) return
+    const entry = { from: word, to: meaning }
+    const existing = builtInDictionary.get(normalized)
+    if (existing) {
+      if (!existing.some((item) => item.to === meaning)) existing.push(entry)
+      return
+    }
+    builtInDictionary.set(normalized, [entry])
+  })
+}
 function audioPath(row: VocabRow, kind: 'pronounce' | 'sentence' = 'pronounce') { const text = kind === 'sentence' ? clean(row.example_sentence) : clean(row.german_word); const word = text.replaceAll(' ', '_').replaceAll('/', '_').replace(/[^a-zA-Z0-9_\-äöüÄÖÜß]/g, '').replace(/_{2,}/g, '_'); const day = row.level === 'OFFICIAL_GERMAN_A1_List' ? row.day.replace(/^Day (\d)$/, 'Day 0$1') : row.day; return `/audio-cache/${encodeURIComponent(row.level)}/${encodeURIComponent(day)}/${kind}/row_${row.sourceRow + 2}_${encodeURIComponent(word)}.mp3` }
 async function edgeAudio(text: string) { const key = new Request(`/__deutschflash_tts__/${encodeURIComponent(text)}`); try { const cache = await caches.open('deutschflash-audio-v1'); const stored = await cache.match(key); if (stored) return URL.createObjectURL(await stored.blob()); const response = await fetch('/api/tts', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ text }) }); if (!response.ok || !response.headers.get('content-type')?.includes('audio')) return null; const blob = await response.blob(); await cache.put(key, new Response(blob, { headers: { 'Content-Type': 'audio/mpeg' } })); return URL.createObjectURL(blob) } catch { return null } }
 function speak(text: string, row?: VocabRow, kind: 'pronounce' | 'sentence' = 'pronounce') { const fallback = () => { window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'de-DE'; utterance.rate = .86; window.speechSynthesis.speak(utterance) }; const player = document.getElementById('deutschflash-audio') as HTMLAudioElement | null; if (!player) return fallback(); const play = (url: string, onError: () => void) => { player.onerror = onError; player.pause(); player.src = url; player.currentTime = 0; player.play().catch(onError) }; const requestEdgeVoice = (playResult = true) => { if (!voiceCache.has(text)) voiceCache.set(text, edgeAudio(text)); voiceCache.get(text)!.then((url) => { if (playResult && url) play(url, fallback) }) }; const audioRow = row ?? sentenceRows.get(text); const requestedKind = audioRow && text === clean(audioRow.example_sentence) ? 'sentence' : kind; if (audioRow) play(audioPath(audioRow, requestedKind), () => { fallback(); requestEdgeVoice(false) }); else requestEdgeVoice() }
@@ -33,6 +50,10 @@ function searchableRowText(row: VocabRow) { return Object.entries(row).filter(([
 async function lookupWord(word: string): Promise<DictionaryEntry[]> {
   const normalized = clean(word).trim().replace(/[^\p{L}\p{N}ßäöüÄÖÜ-]/gu, '').toLowerCase()
   if (!normalized || normalized.length < 2) return []
+
+  const builtIn = builtInDictionary.get(normalized)
+  if (builtIn?.length) return builtIn
+
   if (!dictionaryCache.has(normalized)) {
     dictionaryCache.set(normalized, fetch(`/api/dictionary?term=${encodeURIComponent(normalized)}`).then(async (response) => {
       if (!response.ok) return []
@@ -97,7 +118,7 @@ function MeaningWord({ word }: { word: string }) {
 
 export default function App() {
   const [workbooks, setWorkbooks] = useState<Workbook[]>([]); const [loading, setLoading] = useState(true); const [error, setError] = useState(''); const [tab, setTab] = useState<Tab>('practice')
-  useEffect(() => { let active = true; async function load() { try { const results = await Promise.all(WORKBOOKS.map(async ([level, file]) => { const response = await fetch(`/data/${file}`); if (!response.ok) throw new Error(`Could not load ${file}`); const workbook = XLSX.read(await response.arrayBuffer(), { type: 'array' }); const sheets = Object.fromEntries(workbook.SheetNames.map((day) => [day, XLSX.utils.sheet_to_json<Record<string, unknown>>(workbook.Sheets[day], { defval: '' }).map((raw, sourceRow) => ({ ...raw, level, day, sourceRow }) as VocabRow).filter((row) => clean(row.german_word))])); return { level, sheets } })); if (active) setWorkbooks(results) } catch (cause) { if (active) setError(cause instanceof Error ? cause.message : 'Could not load the vocabulary data.') } finally { if (active) setLoading(false) } } load(); return () => { active = false } }, [])
+  useEffect(() => { let active = true; async function load() { try { const results = await Promise.all(WORKBOOKS.map(async ([level, file]) => { const response = await fetch(`/data/${file}`); if (!response.ok) throw new Error(`Could not load ${file}`); const workbook = XLSX.read(await response.arrayBuffer(), { type: 'array' }); const sheets = Object.fromEntries(workbook.SheetNames.map((day) => [day, XLSX.utils.sheet_to_json<Record<string, unknown>>(workbook.Sheets[day], { defval: '' }).map((raw, sourceRow) => ({ ...raw, level, day, sourceRow }) as VocabRow).filter((row) => clean(row.german_word))])); return { level, sheets } })); if (active) { setWorkbooks(results); seedBuiltInDictionary(results); } } catch (cause) { if (active) setError(cause instanceof Error ? cause.message : 'Could not load the vocabulary data.') } finally { if (active) setLoading(false) } } load(); return () => { active = false } }, [])
   useEffect(() => { rememberSentences(workbooks) }, [workbooks])
   if (loading) return <main className="app-shell loading"><div className="loader" /><p>Loading your vocabulary library...</p></main>
   if (error) return <main className="app-shell loading"><p>{error}</p></main>
