@@ -9,7 +9,7 @@ type Workbook = { level: string; sheets: Record<string, VocabRow[]> }
 type Tab = 'practice' | 'search' | 'test' | 'visuals'
 type DictionaryEntry = { from: string; to: string }
 
-const WORKBOOKS = [['A1', 'A1_vocab.xlsx'], ['A2', 'A2_vocab.xlsx'], ['B1', 'B1_vocab.xlsx'], ['B2', 'B2_vocab.xlsx'], ['Movie', 'Movie_vocab.xlsx'], ['OFFICIAL_GERMAN_A1_List', 'OFFICIAL_GERMAN_A1_List_vocab.xlsx'], ['TOPICS_WISE', 'TOPICS_WISE_vocab.xlsx']] as const
+const WORKBOOKS = [['A1', 'A1_vocab.xlsx'], ['A2', 'A2_vocab.xlsx'], ['B1', 'B1_vocab.xlsx'], ['B2', 'B2_vocab.xlsx'], ['Movie', 'Movie_vocab.xlsx'], ['OFFICIAL_GERMAN_A1_List', 'OFFICIAL_GERMAN_A1_List_vocab.xlsx'], ['OFFICIAL_GERMAN_A2_List', 'OFFICIAL_GERMAN_A2_List_vocab.xlsx'], ['TOPICS_WISE', 'TOPICS_WISE_vocab.xlsx']] as const
 const DAY_DETAILS: Record<string, [string, string]> = { 'Day 1': ['Essential nouns I', 'Family, nature, weather and stationery'], 'Day 2': ['Social and greetings', 'Greetings, farewells and feelings'], 'Day 3': ['Essential nouns II', 'Home, people and transport'], 'Day 4': ['Directions and seasons', 'Places, weather and time'], 'Day 5': ['Verbs and time phrases', 'Essential actions and daily language'] }
 const slides = Array.from({ length: 60 }, (_, i) => `/slides/slide-${String(i + 1).padStart(2, '0')}.webp`)
 const clean = (value: unknown) => { const text = String(value ?? '').trim(); return text === 'nan' || text === 'undefined' ? '' : text }

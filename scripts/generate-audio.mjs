@@ -7,6 +7,9 @@ const root = process.cwd()
 const dataDir = path.join(root, 'public', 'data')
 const cacheDir = path.join(root, 'public', 'audio-cache')
 let edgeAvailable = true
+let generated = 0
+let skipped = 0
+let failed = 0
 const workbooks = [
   ['A1', 'A1_vocab.xlsx'],
   ['A2', 'A2_vocab.xlsx'],
@@ -14,6 +17,7 @@ const workbooks = [
   ['B2', 'B2_vocab.xlsx'],
   ['Movie', 'Movie_vocab.xlsx'],
   ['OFFICIAL_GERMAN_A1_List', 'OFFICIAL_GERMAN_A1_List_vocab.xlsx'],
+  ['OFFICIAL_GERMAN_A2_List', 'OFFICIAL_GERMAN_A2_List_vocab.xlsx'],
   ['TOPICS_WISE', 'TOPICS_WISE_vocab.xlsx'],
 ]
 
@@ -37,7 +41,7 @@ async function generate(level, day, rows) {
     for (const [text, kind] of audioItems) {
       if (!text) continue
       const target = targetFor(level, day, sourceRow, text, kind)
-      if (await exists(target)) continue
+      if (await exists(target)) { skipped += 1; continue }
       await mkdir(path.dirname(target), { recursive: true })
       try {
         let audio
@@ -55,8 +59,10 @@ async function generate(level, day, rows) {
           audio = Buffer.from(await response.arrayBuffer())
         }
         await writeFile(target, audio)
+        generated += 1
         console.log(`generated ${path.relative(root, target)}`)
       } catch (error) {
+        failed += 1
         console.warn(`could not generate ${level}/${day}/${kind}/${text}: ${error instanceof Error ? error.message : error}`)
       }
     }
@@ -72,4 +78,4 @@ for (const [level, file] of workbooks) {
     await generate(level, day, rows)
   }
 }
-console.log(`audio cache scan complete: ${missing} vocabulary entries checked`)
+console.log(`audio cache scan complete: ${missing} vocabulary entries checked; ${generated} generated, ${skipped} already cached, ${failed} failed`)

@@ -23,4 +23,7 @@ The app reads Excel workbooks directly in the browser using `xlsx`. Speech falls
 # deutschflash-react
 
 After adding more vocab 
-run ''' npm run audio:generate '''
+run
+```bash
+ npm run audio:generate 
+ ```
