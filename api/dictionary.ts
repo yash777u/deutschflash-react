@@ -1,5 +1,3 @@
-import dictcc from 'dictcc-js'
-
 type DictionaryEntry = { from: string; to: string }
 
 export default async function handler(request: Request): Promise<Response> {
@@ -9,8 +7,10 @@ export default async function handler(request: Request): Promise<Response> {
   if (!term || term.length > 50) return Response.json({ entries: [] }, { status: 400 })
 
   try {
+    const module = await import('dictcc-js')
+    const translate = module.default?.translate ?? module.translate
     const entries = await new Promise<DictionaryEntry[]>((resolve, reject) => {
-      dictcc.translate('de', 'en', term, (result: DictionaryEntry[] | undefined, error: unknown) => {
+      translate('de', 'en', term, (result: DictionaryEntry[] | undefined, error: unknown) => {
         if (error) reject(error)
         else resolve(Array.isArray(result) ? result : [])
       })
