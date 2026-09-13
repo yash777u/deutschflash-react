@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import * as XLSX from 'xlsx'
 import { ArrowLeft, ArrowRight, Check, ChevronLeft, ChevronRight, Clock3, Expand, RotateCw, Search, Shuffle, Sparkles, Volume2, X } from 'lucide-react'
+import { SpeedInsights } from '@vercel/speed-insights/react'
 import './App.css'
 import './cue.css'
 
@@ -101,7 +102,7 @@ export default function App() {
   useEffect(() => { rememberSentences(workbooks) }, [workbooks])
   if (loading) return <main className="app-shell loading"><div className="loader" /><p>Loading your vocabulary library...</p></main>
   if (error) return <main className="app-shell loading"><p>{error}</p></main>
-  return <main className="app-shell"><audio id="deutschflash-audio" preload="auto" /><header className="site-header"><div className="brand"><span className="brand-mark">DF</span><div><strong>DeutschFlash</strong><small>Vocabulary studio</small></div></div><nav aria-label="Application sections">{(['practice', 'search', 'test', 'visuals'] as Tab[]).map((item) => <button key={item} className={tab === item ? 'active' : ''} onClick={() => setTab(item)}>{item}</button>)}</nav></header>{tab === 'practice' && <Practice workbooks={workbooks} />}{tab === 'search' && <WordSearch workbooks={workbooks} />}{tab === 'test' && <RandomTest workbooks={workbooks} />}{tab === 'visuals' && <Visuals />}</main>
+  return <main className="app-shell"><audio id="deutschflash-audio" preload="auto" /><header className="site-header"><div className="brand"><span className="brand-mark">DF</span><div><strong>DeutschFlash</strong><small>Vocabulary studio</small></div></div><nav aria-label="Application sections">{(['practice', 'search', 'test', 'visuals'] as Tab[]).map((item) => <button key={item} className={tab === item ? 'active' : ''} onClick={() => setTab(item)}>{item}</button>)}</nav></header>{tab === 'practice' && <Practice workbooks={workbooks} />}{tab === 'search' && <WordSearch workbooks={workbooks} />}{tab === 'test' && <RandomTest workbooks={workbooks} />}{tab === 'visuals' && <Visuals />}<SpeedInsights /></main>
 }
 
 function Practice({ workbooks }: { workbooks: Workbook[] }) {
