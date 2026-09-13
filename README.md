@@ -9,7 +9,7 @@ Import this folder as a Vercel project. Vercel detects Vite automatically.
 - Build command: `npm run build`
 - Output directory: `dist`
 
-The vocabulary workbooks, available cached pronunciation MP3s, and visual slides are bundled in `public/`. There are no API routes, server functions, environment variables, or backend dependencies.
+The vocabulary workbooks, available cached pronunciation MP3s, and visual slides are bundled in `public/`. The hover dictionary and speech fallback use the Vercel functions in `api/`.
 
 ## Local development
 
