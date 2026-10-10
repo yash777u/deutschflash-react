@@ -60,6 +60,7 @@ button, input, select { font: inherit; } button { cursor: pointer; }
 .quiz { max-width: 760px; }
 .content.quiz { padding-top: 18px; }
 .quiz-meta, .word-top { display: flex; justify-content: space-between; align-items: center; gap: 14px; color: var(--muted); font: 600 11px 'DM Mono', monospace; }
+.word-actions { display: flex; align-items: center; gap: 8px; }
 .progress { height: 5px; margin: 14px 0 18px; border-radius: 10px; background: rgba(255, 255, 255, .08); overflow: hidden; }
 .progress i { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--green), var(--cyan)); transition: width .3s ease; }
 .word-card, .test-card, .summary { border: 1px solid var(--line); border-radius: 24px; background: linear-gradient(145deg, rgba(38, 63, 64, .78), rgba(14, 27, 32, .76)); box-shadow: var(--shadow); backdrop-filter: blur(22px); }
@@ -139,6 +140,11 @@ button, input, select { font: inherit; } button { cursor: pointer; }
 .day-table td { vertical-align: top; }
 .day-table .day-sentence { overflow-wrap: anywhere; }
 .day-table .day-number { color: var(--muted); font: 11px 'DM Mono', monospace; text-align: center; }
+.bookmark-button { display: inline-grid; place-items: center; width: 28px; height: 28px; margin-left: 6px; border: 1px solid var(--line); border-radius: 8px; background: rgba(255,255,255,.03); color: var(--muted); }
+.bookmark-button.active { color: var(--yellow); border-color: rgba(255, 214, 107, .28); background: rgba(255, 214, 107, .09); }
+.bookmark-button:hover { border-color: var(--yellow); transform: translateY(-1px); }
+.library-actions { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 16px; }
+.bookmark-trigger { display: inline-flex; align-items: center; gap: 8px; }
 .day-practice { margin-top: 16px; }
 .core-german { color: var(--green) !important; font-size: 16px !important; font-weight: 800; }
 .core-type { display: inline-flex; border: 1px solid rgba(107, 230, 210, .22); border-radius: 99px; padding: 4px 7px; color: var(--cyan); background: rgba(107, 230, 210, .07); font: 10px 'DM Mono', monospace; }
