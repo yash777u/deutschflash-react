@@ -5,8 +5,12 @@
   "type": "module",
   "scripts": {
     "audio:generate": "node scripts/generate-audio.mjs",
+    "podcasts:manifest": "node scripts/generate-podcast-manifest.mjs",
+    "podcasts:subtitles": "uv run --with faster-whisper==1.2.1 --with 'av<16' python scripts/generate-podcast-subtitles.py",
+    "podcasts:prepare": "npm run podcasts:manifest && npm run podcasts:subtitles && npm run podcasts:manifest",
+    "predev": "npm run podcasts:prepare",
     "dev": "vite",
-    "prebuild": "npm run audio:generate",
+    "prebuild": "npm run audio:generate && npm run podcasts:prepare",
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview"

@@ -1,0 +1,16 @@
+[
+  {
+    "id": "Der_geheime_Code_der_deutschen_Sprache",
+    "title": "Der geheime Code der deutschen Sprache",
+    "audioSrc": "/podcasts/Der_geheime_Code_der_deutschen_Sprache.mp3",
+    "captionsSrc": "/podcasts/subtitles/Der_geheime_Code_der_deutschen_Sprache.vtt",
+    "format": "MP3"
+  },
+  {
+    "id": "Ein_Tag_in_Deutschland_mit_650_Wörtern",
+    "title": "Ein Tag in Deutschland mit 650 Wörtern",
+    "audioSrc": "/podcasts/Ein_Tag_in_Deutschland_mit_650_W%C3%B6rtern.mp3",
+    "captionsSrc": "/podcasts/subtitles/Ein_Tag_in_Deutschland_mit_650_W%C3%B6rtern.vtt",
+    "format": "MP3"
+  }
+]

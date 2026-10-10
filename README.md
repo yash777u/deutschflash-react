@@ -1,29 +1,45 @@
-# DeutschFlash React
+# DeutschFlash 🚀
 
-A static React + TypeScript migration of the supplied Streamlit project.
+A slick German vocab app for learning fast, remembering longer, and getting that “I got this” feeling 😌
 
-## Deploy to Vercel
+## Why this app is cool ✨
 
-Import this folder as a Vercel project. Vercel detects Vite automatically.
+- 📚 See all words of one day in a clean table
+- 🧠 Learn with meaning + example sentence for each word
+- 🔊 Listen to pronunciation and sentence audio
+- ⭐ Bookmark hard words and keep them saved in browser storage
+- 🎯 Practice in multiple-choice mode
+- 🔎 Search full vocabulary instantly
+- ⏱️ Take timed recall tests for revision
+- 🖼️ Explore visual cues and core vocabulary sets
 
-- Build command: `npm run build`
-- Output directory: `dist`
+## Main vibe 💥
 
-The vocabulary workbooks, available cached pronunciation MP3s, and visual slides are bundled in `public/`. The hover dictionary and speech fallback use the Vercel functions in `api/`.
+This app is built for daily German learning without the boring grind. You can:
 
-## Local development
+- open a day’s vocabulary list
+- review the actual word, meaning, and sentence together
+- save tricky words for later
+- come back anytime and still see your saved words
 
-```bash
-npm install
-npm run dev
-```
+## Quick start ⚡
 
-The app reads Excel workbooks directly in the browser using `xlsx`. Speech falls back to the browser's German speech-synthesis voice when an exact cached MP3 is not present.
-# deutschflash-react
-# deutschflash-react
+For install and local setup steps, check [INSTALL.md](INSTALL.md).
 
-After adding more vocab 
-run
-```bash
- npm run audio:generate 
- ```
+
+## Project feel 🎨
+
+Smart, fast, and low-friction — like a study app made for daily consistency, not just one-time cramming.
+
+## Sources 📚
+
+This project is built using vocabulary content inspired by official German learning standards and curated lesson material from skilled German teachers, with a focus on practical, learner-friendly daily progression.
+
+- Official Goethe-style learning structure and progressions
+- Content shaped by experienced German language teachers
+- Everyday vocabulary, phrases, and sentence patterns used in real learning contexts
+
+---
+
+If you want, I can also make the README even more “viral startup” style with a hero section and badges.
+
